@@ -1,0 +1,53 @@
+{
+  "id": "8dfa7f43-b1ee-400d-92a5-c0d40c3474fe",
+  "prevId": "aa98b284-5b44-4737-be00-bae44c0c7d4d",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.portugues": {
+      "name": "portugues",
+      "schema": "",
+      "columns": {
+        "matricula": {
+          "name": "matricula",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "faltas": {
+          "name": "faltas",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "presencaDiaria": {
+          "name": "presencaDiaria",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "portugues_matricula_unique": {
+          "name": "portugues_matricula_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "matricula"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

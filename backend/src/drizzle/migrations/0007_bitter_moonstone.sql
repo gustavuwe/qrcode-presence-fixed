@@ -1,0 +1,1 @@
+ALTER TABLE "codes" RENAME COLUMN "id" TO "code_id";

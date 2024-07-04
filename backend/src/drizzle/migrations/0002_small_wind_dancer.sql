@@ -1,0 +1,1 @@
+ALTER TABLE "portugues" ADD COLUMN "presencaDiaria" boolean DEFAULT false;
