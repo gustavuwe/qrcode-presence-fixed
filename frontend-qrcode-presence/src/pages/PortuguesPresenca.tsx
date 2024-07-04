@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
 
@@ -8,22 +8,46 @@ export default function PortuguesPresenca() {
   const [isValidURL, setIsValidURL] = useState(true)
   const [redirect, setRedirect] = useState(false);
 
-  useEffect(() => {
+  const makeRequest = useCallback(async () => {
     try {
-      const responseVerifyCode = axios.post("http://localhost/3333/listcode", {
-        body: {
-            discipline: "portugues",
-            class_id: "2e7b239f-f0e6-4ad2-99ca-90b0871b1fb"
-        }
-      }).then(response => {
-        if (response.data.getCode !== code) {
+      const responseVerifyCode = axios.post("http://localhost:3000/code", {
+        discipline: "portugues",
+        class_id: "2e7b239f-f0e6-4ad2-99ca-90b0871b1fb2"
+      }).then((response) => {
+        console.log(response.data.code[0].code) // correct form
+        if (code !== response.data.code[0].code) {
           setIsValidURL(false)
         }
       })
-      } catch (err) {
-        console.error(err)
-      }
-  }, [code])
+    } catch (err) {
+      console.error(err)
+    }
+  })
+
+  const verifyAlreadyGeneratedCode = useCallback(async () => {
+    try {
+      const responseAlreadyGeneratedCode = axios.post("http://localhost:3000/listcode", {
+        discipline: "portugues",
+        class_id: "2e7b239f-f0e6-4ad2-99ca-90b0871b1fb2"
+      }).then((response) => {
+        console.log(response.data.getCode[0].code) // correct form
+        if (code !== response.data.getCode[0].code) {
+          setIsValidURL(false)
+        }
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  })
+
+  useEffect(() => {
+    verifyAlreadyGeneratedCode()
+    setInterval(() => {
+      makeRequest()
+    }, 20000) // after 20 seconds then execute
+    // const code = request()
+    // console.log(code)
+  }, [code, makeRequest])
 
   async function validatePresence(event) {
     event.preventDefault();
@@ -59,7 +83,7 @@ export default function PortuguesPresenca() {
   }
 
   if (!isValidURL) {
-    return <div>URL Invalida!</div>
+    return <div><h1>Código expirado!</h1></div>
   }
 
   return (

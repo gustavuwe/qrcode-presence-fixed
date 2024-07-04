@@ -3,6 +3,8 @@ import { useState } from "react";
 import QRCode from "qrcode";
 import axios from "axios";
 
+// TODO: FIX UNDEFINED CODE
+
 export default function IndexPage() {
   const [src, setSrc] = useState<string>("");
   const [isAlreadyGenerated, setIsAlreadyGenerated] = useState(false);
@@ -23,34 +25,45 @@ export default function IndexPage() {
   // }
 
   const getCode = useCallback(async () => {
+    let code = ""
     const response = await axios.post("http://localhost:3000/code", {
       discipline: "portugues",
       class_id: "2e7b239f-f0e6-4ad2-99ca-90b0871b1fb2"
-    });
-    return response
+    })
+    code = response.data.code
+    return code
   }, [])
 
   const generate = useCallback(async (code?: string) => {
     if (code) {
-        await QRCode.toDataURL(`http://localhost:5173/portugues/${code}`).then(setSrc);
+        await QRCode.toDataURL(`http://localhost:5173/portugues/${String(code)}`).then(setSrc);
+        setIsAlreadyGenerated(true);
     } else {
         const newCode = await getCode();
-        await QRCode.toDataURL(`http://localhost:5173/portugues/${newCode}`).then(setSrc);
+        await QRCode.toDataURL(`http://localhost:5173/portugues/${String(newCode)}`).then(setSrc);
         setIsAlreadyGenerated(true);
     }
   }, [setSrc, getCode, setIsAlreadyGenerated])
 
+  const execFunctions = useCallback(async () => {
+    const code = await getCode();
+    console.log(code)
+    await generate(String(code));
+  }, [generate, getCode])
+
   useEffect(() => {
     if (isAlreadyGenerated) { // if the admin user already clicked to generate then set inverval of 15s
       setInterval(() => {
-        async function generateUsingCode() {
-          const code = await getCode();
-          await generate(String(code));
-        }
-        generateUsingCode()
-      }, 15000);
+        // async function generateUsingCode() {
+        //   const code = await getCode();
+        //   console.log("a " + code)
+        //   await generate(String(code));
+        // }
+        // generateUsingCode()
+        execFunctions()
+      }, 30000); // each 30 seconds change
     }
-    }, [isAlreadyGenerated, generate, getCode]);
+    }, [isAlreadyGenerated, generate, getCode, execFunctions]);
 
   return (
     <>
